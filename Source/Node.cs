@@ -24,17 +24,28 @@ namespace LinkGraph {
         private const double RadiusRange = 1000;
 
         /// <summary>
+        /// The text format used for drawing labels. 
+        /// </summary>
+        private static readonly StringFormat LabelFormat = new StringFormat() {
+            LineAlignment = StringAlignment.Center
+        };
+
+        /// <summary>
         /// The collection of brushes for drawing labels. LabelBrush[x] gives the 
         /// appropriate brush for drawing at 8-bit alpha level x. 
         /// </summary>
         private static readonly Brush[] LabelBrush = new Brush[256];
 
         /// <summary>
-        /// The text format used for drawing labels. 
+        /// The collection of fonts for drawing labels. LabelFont[s] gives the 
+        /// appropriate font of size s. 
         /// </summary>
-        private static readonly StringFormat LabelFormat = new StringFormat() {
-            LineAlignment = StringAlignment.Center
-        };
+        private static readonly Font[] LabelFont = new Font[LabelFontMax + 1];
+
+        /// <summary>
+        /// The maximum font size for drawing labels. 
+        /// </summary>
+        private const int LabelFontMax = 60;
 
         /// <summary>
         /// The distance within which labels start being drawn.  
@@ -134,8 +145,14 @@ namespace LinkGraph {
         /// Initializes static members. 
         /// </summary>
         static Node() {
+
+            // Initialize label brushes. 
             for (int i = 0; i < LabelBrush.Length; i++)
                 LabelBrush[i] = new SolidBrush(Color.FromArgb(i, Color.White));
+
+            // Initialize label fonts
+            for (int i = 1; i < LabelFont.Length; i++)
+                LabelFont[i] = new Font("Consolas", i);
         }
 
         /// <summary>
@@ -197,26 +214,27 @@ namespace LinkGraph {
         public void Draw(Renderer renderer, Graphics g, bool showLabels = true) {
             double radius = Radius;
 
-            // Draw circle. 
-            renderer.FillCircle2D(g, _brush, Location, radius);
+            // Draw circle. If it is successful the node is in view and we try to draw 
+            // the label as well. 
+            if (renderer.FillCircle2D(g, _brush, Location, radius)) {
 
-            // Draw label. 
-            if (showLabels && Label != null) {
-                double ratio = renderer.ComputeScale(Location);
-                int radiusOffset = (int)Math.Round(radius * ratio);
+                // Draw label. 
+                if (showLabels && Label != null) {
+                    double ratio = renderer.ComputeScale(Location);
+                    int radiusOffset = (int)Math.Round(radius * ratio);
 
-                Point point = renderer.ComputePoint(Location);
-                point.Offset(radiusOffset + LabelOffset, 0);
+                    Point point = renderer.ComputePoint(Location);
+                    point.Offset(radiusOffset + LabelOffset, 0);
 
-                double opacity = LabelOpacityIntercept - Location.To(renderer.Camera).Magnitude() / 1000.0;
-                opacity = Math.Min(Math.Max(opacity, 0), 1);
+                    double opacity = LabelOpacityIntercept - Location.To(renderer.Camera).Magnitude() / 1000.0;
+                    opacity = Math.Min(Math.Max(opacity, 0), 1);
 
-                if (opacity > 1 / 255.0) {
-                    Brush brush = LabelBrush[(int)(255 * opacity)];
+                    if (opacity > 1 / 255.0 && ratio >= 1) {
+                        Brush brush = LabelBrush[(int)(255 * opacity)];
+                        Font font = LabelFont[(int)Math.Min(Math.Round(ratio), LabelFontMax)];
 
-                    if (ratio > 1)
-                        using (Font font = new Font("Consolas", (float)Math.Min(ratio, 60)))
-                            g.DrawString(Label, font, brush, point, LabelFormat);
+                        g.DrawString(Label, font, brush, point, LabelFormat);
+                    }
                 }
             }
         }
