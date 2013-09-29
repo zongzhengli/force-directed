@@ -24,22 +24,32 @@ namespace LinkGraph {
         private const double RadiusRange = 1000;
 
         /// <summary>
-        /// The format used for the labels. 
+        /// The collection of brushes for drawing labels. LabelBrush[x] gives the 
+        /// appropriate brush for drawing at 8-bit alpha level x. 
+        /// </summary>
+        private static readonly Brush[] LabelBrush = new Brush[256];
+
+        /// <summary>
+        /// The text format used for drawing labels. 
         /// </summary>
         private static readonly StringFormat LabelFormat = new StringFormat() {
-            LineAlignment = StringAlignment.Center,
-            Alignment = StringAlignment.Center
+            LineAlignment = StringAlignment.Center
         };
 
         /// <summary>
-        /// The font used for the labels. 
+        /// The distance within which labels start being drawn.  
         /// </summary>
-        private static readonly Font LabelFont = new Font("Arial", 7);
+        private const double LabelRange = 1000;
 
         /// <summary>
-        /// The brush used for the labels. 
+        /// The intercept in the label opacity equation. 
         /// </summary>
-        private static readonly Brush LabelBrush = Brushes.Black;
+        private const double LabelOpacityIntercept = 1.5;
+
+        /// <summary>
+        /// The distance from the node for drawing labels.  
+        /// </summary>
+        private const int LabelOffset = 5;
 
         /// <summary>
         /// The random number generator used to generate random node locations. 
@@ -52,7 +62,7 @@ namespace LinkGraph {
         /// <param name="mass">The mass to calculate a radius for.</param>
         /// <returns>The radius defined for the given mass value.</returns>
         public static double GetRadius(double mass) {
-            return 0.8  * Math.Pow(mass, 1 / 3.0);
+            return 0.8 * Math.Pow(mass, 1 / 3.0);
         }
 
         /// <summary>
@@ -121,6 +131,14 @@ namespace LinkGraph {
         private Brush _brush;
 
         /// <summary>
+        /// Initializes static members. 
+        /// </summary>
+        static Node() {
+            for (int i = 0; i < LabelBrush.Length; i++)
+                LabelBrush[i] = new SolidBrush(Color.FromArgb(i, Color.White));
+        }
+
+        /// <summary>
         /// Constructs a node with the given colour. 
         /// </summary>
         /// <param name="colour">The colour of the node.</param>
@@ -177,11 +195,29 @@ namespace LinkGraph {
         /// <param name="g">The graphics surface.</param>
         /// <param name="showLabels">Whether to draw the label.</param>
         public void Draw(Renderer renderer, Graphics g, bool showLabels = true) {
-            renderer.FillCircle2D(g, _brush, Location, 2 * Radius);
+            double radius = Radius;
 
+            // Draw circle. 
+            renderer.FillCircle2D(g, _brush, Location, radius);
+
+            // Draw label. 
             if (showLabels && Label != null) {
-                Point p = renderer.ComputePoint(Location);
-                g.DrawString(Label, LabelFont, LabelBrush, p, LabelFormat);
+                double ratio = renderer.ComputeScale(Location);
+                int radiusOffset = (int)Math.Round(radius * ratio);
+
+                Point point = renderer.ComputePoint(Location);
+                point.Offset(radiusOffset + LabelOffset, 0);
+
+                double opacity = LabelOpacityIntercept - Location.To(renderer.Camera).Magnitude() / 1000.0;
+                opacity = Math.Min(Math.Max(opacity, 0), 1);
+
+                if (opacity > 1 / 255.0) {
+                    Brush brush = LabelBrush[(int)(255 * opacity)];
+
+                    if (ratio > 1)
+                        using (Font font = new Font("Consolas", (float)Math.Min(ratio, 60)))
+                            g.DrawString(Label, font, brush, point, LabelFormat);
+                }
             }
         }
 

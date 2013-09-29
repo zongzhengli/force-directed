@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Lattice;
-using System.Threading.Tasks;
+using Threading;
 
 namespace LinkGraph {
 
+    /// <summary>
+    /// Represents a model of nodes and edges. 
+    /// </summary>
     class WorldModel {
 
         /// <summary>
@@ -98,7 +101,7 @@ namespace LinkGraph {
         /// <summary>
         /// The collection of edges in the model. 
         /// </summary>
-        private List<Tuple<Node, Node>> _edges = new List<Tuple<Node, Node>>();
+        private List<Edge> _edges = new List<Edge>();
 
         /// <summary>
         /// The lock required to modify the nodes collection. 
@@ -142,7 +145,7 @@ namespace LinkGraph {
             lock (_nodeLock) {
                 a.Connected.Add(b);
                 b.Connected.Add(a);
-                _edges.Add(new Tuple<Node, Node>(a, b));
+                _edges.Add(new Edge(a, b));
             }
         }
 
@@ -181,7 +184,9 @@ namespace LinkGraph {
                     while ((a = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) == (b = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) || a.IsConnectedTo(b)) ;
                     Connect(a, b);
                 }
-
+                foreach (Node node in _nodes)
+                    if (node.Label == null)
+                        node.Label = node.Location.Z.ToString();
 
                 // Update nodes and determine required tree width. 
                 double treeHalfWidth = 0;
@@ -250,8 +255,15 @@ namespace LinkGraph {
         /// Moves the camera in association with the given mouse wheel delta. 
         /// </summary>
         /// <param name="delta">The signed number of dents the mouse wheel moved.</param>
-        public void MoveCameraZ(int delta) {
+        public void MoveCamera(int delta) {
             _cameraZVelocity += delta * CameraZAcceleration;
+        }
+
+        /// <summary>
+        /// Stops the camera if it is moving. 
+        /// </summary>
+        public void StopCamera() {
+            _cameraZVelocity = 0;
         }
 
         /// <summary>
@@ -263,8 +275,8 @@ namespace LinkGraph {
 
             // Draw edges. 
             for (int i = 0; i < _edges.Count; i++) {
-                Tuple<Node, Node> edge = _edges[i];
-                g.DrawLine(EdgePen, _renderer.ComputePoint(edge.Item1.Location), _renderer.ComputePoint(edge.Item2.Location));
+                Edge edge = _edges[i];
+                g.DrawLine(EdgePen, _renderer.ComputePoint(edge.Node1.Location), _renderer.ComputePoint(edge.Node2.Location));
             }
 
             // Draw nodes.

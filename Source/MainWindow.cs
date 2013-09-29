@@ -144,6 +144,8 @@ namespace LinkGraph {
             MouseDown += (sender, e) => {
                 _previousMouseLocation = e.Location;
                 _drag = true;
+
+                _model.StopCamera();
             };
 
             // Initialize mouse up behaviour. 
@@ -164,7 +166,7 @@ namespace LinkGraph {
 
             // Initialize mouse wheel behaviour. 
             MouseWheel += (sender, e) => {
-                _model.MoveCameraZ(e.Delta); ;
+                _model.MoveCamera(e.Delta); ;
             };
         }
 
@@ -192,7 +194,10 @@ namespace LinkGraph {
                 while (true) {
 
                     // Update the model. 
-                    _model.Update();
+                    timer.Start();
+
+                    if (!_drag)
+                        _model.Update();
 
                     // Sleep for appropriate duration. 
                     int elapsed = (int)timer.ElapsedMilliseconds;
