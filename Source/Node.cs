@@ -13,9 +13,9 @@ namespace LinkGraph {
 
         /// <summary>
         /// The multiplicative factor that gives the rate at which velocity is 
-        /// dampled after each frame. 
+        /// dampened after each frame. 
         /// </summary>
-        private const double DamplingFactor = 0.4;
+        private const double VelocityDampening = 0.4;
 
         /// <summary>
         /// The expected maximum radius. A random location is generated with each 
@@ -52,7 +52,7 @@ namespace LinkGraph {
         /// <param name="mass">The mass to calculate a radius for.</param>
         /// <returns>The radius defined for the given mass value.</returns>
         public static double GetRadius(double mass) {
-            return 5 * Math.Pow(mass, 1 / 3.0) + 5;
+            return 0.8  * Math.Pow(mass, 1 / 3.0);
         }
 
         /// <summary>
@@ -78,7 +78,11 @@ namespace LinkGraph {
         /// <summary>
         /// The mass of the node. 
         /// </summary>
-        public double Mass;
+        public double Mass {
+            get {
+                return Connected.Count > 0 ? Connected.Count : 1;
+            }
+        }
 
         /// <summary>
         /// The radius of the node. 
@@ -117,15 +121,6 @@ namespace LinkGraph {
         private Brush _brush;
 
         /// <summary>
-        /// Constructs a node with the given mass. All other properties are assigned 
-        /// default values of zero. 
-        /// </summary>
-        /// <param name="mass">The mass of the new Body.</param>
-        public Node(double mass) {
-            Mass = mass;
-        }
-
-        /// <summary>
         /// Constructs a node with the given colour. 
         /// </summary>
         /// <param name="colour">The colour of the node.</param>
@@ -160,7 +155,7 @@ namespace LinkGraph {
         /// </summary>
         /// <param name="other">A potentially connected node.</param>
         /// <returns>Whether the node is connected to the given nod</returns>
-        public bool IsConnected(Node other) {
+        public bool IsConnectedTo(Node other) {
             return Connected.Contains(other);
         }
 
@@ -171,7 +166,7 @@ namespace LinkGraph {
         public void Update() {
             Velocity += Acceleration;
             Location += Velocity;
-            Velocity *= DamplingFactor;
+            Velocity *= VelocityDampening;
             Acceleration = Vector.Zero;
         }
 
