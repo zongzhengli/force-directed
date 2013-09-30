@@ -103,6 +103,7 @@ namespace LinkGraph {
         public MainWindow() {
             InitializeComponent();
             DoubleBuffered = true;
+            _model.GenerateDemo();
 
             Paint += Draw;
 

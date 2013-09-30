@@ -157,6 +157,8 @@ namespace LinkGraph {
         /// <param name="a">A node to connect.</param>
         /// <param name="b">A node to connect.</param>
         public void Connect(Node a, Node b) {
+            if (a == b)
+                throw new ArgumentException("Cannot connect a node to itself.");
             lock (_nodeLock) {
                 a.Connected.Add(b);
                 b.Connected.Add(a);
@@ -168,42 +170,9 @@ namespace LinkGraph {
         /// Updates the model. 
         /// </summary>
         public void Update() {
-            // TODO: implement this method properly.
 
             // Update nodes.
             lock (_nodeLock) {
-
-                // Temporary test code. 
-                while (_nodes.Count < 400) {
-                    while (_nodes.Count < 100) {
-                        Add(new Node(Color.FromArgb(120, Color.White)));
-                    }
-                    while (_nodes.Count == 100) {
-                        Add(new Node(Color.FromArgb(120, Color.White)));
-
-                        for (int i = 0; i < 100; i++) {
-                            Node a, b;
-                            while ((a = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) == (b = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) || a.IsConnectedTo(b)) ;
-                            Connect(a, b);
-                        }
-                    }
-                    if (PseudoRandom.Double() < .6) {
-                        Node n = new Node(Color.FromArgb(120, Color.White));
-                        Connect(_nodes[PseudoRandom.Int32(10)], n);
-                        Add(n);
-                    } else if (PseudoRandom.Double() < .7) {
-                        Node n = new Node(Color.FromArgb(120, Color.White));
-                        Connect(_nodes[PseudoRandom.Int32(_nodes.Count - 1)], n);
-                        Add(n);
-                    } else {
-                        Node a, b;
-                        while ((a = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) == (b = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) || a.IsConnectedTo(b)) ;
-                        Connect(a, b);
-                    }
-                    foreach (Node node in _nodes)
-                        if (node.Label == null)
-                            node.Label = node.Location.Z.ToString();
-                }
 
                 // Update nodes and determine required tree width. 
                 double treeHalfWidth = 0;
@@ -307,6 +276,58 @@ namespace LinkGraph {
             for (int i = 0; i < nodeCount; i++)
                 if (_nodes[i] != null)
                     _nodes[i].Draw(_renderer, g, showLabels);
+        }
+
+        /// <summary>
+        /// Generates nodes and edges for demonstration. 
+        /// </summary>
+        public void GenerateDemo() {
+            lock (_nodeLock) {
+                Color colour = Color.FromArgb(120, Color.White);
+
+                // Add basis nodes. 
+                for (int i = 0; i < 100; i++)
+                    Add(new Node(colour));
+
+                // Connect some basis nodes. 
+                for (int i = 0; i < 80; i++) {
+                    Node a, b;
+                    do {
+                        a = _nodes[PseudoRandom.Int32(_nodes.Count - 1)];
+                        b = _nodes[PseudoRandom.Int32(_nodes.Count - 1)];
+                    } while (a == b || a.IsConnectedTo(b));
+                    Connect(a, b);
+                }
+
+                // Add group nodes. 
+                for (int i = 0; i < 200; i++) {
+                    Node node = new Node(colour);
+                    Connect(node, _nodes[PseudoRandom.Int32(10)]);
+                    Add(node);
+                }
+
+                // Add outlier nodes. 
+                for (int i = 0; i < 200; i++) {
+                    Node node = new Node(colour);
+                    Connect(node, _nodes[PseudoRandom.Int32(_nodes.Count - 1)]);
+                    Add(node);
+                }
+
+                // Connect more nodes. 
+                for (int i = 0; i < 50; i++) {
+                    Node a, b;
+                    do {
+                        a = _nodes[PseudoRandom.Int32(_nodes.Count - 1)];
+                        b = _nodes[PseudoRandom.Int32(_nodes.Count - 1)];
+                    } while (a == b || a.IsConnectedTo(b));
+                    Connect(a, b);
+                }
+
+                // Give each node a random label. 
+                foreach (Node node in _nodes)
+                    if (node.Label == null)
+                        node.Label = node.Location.Z.ToString();
+            }
         }
     }
 }
