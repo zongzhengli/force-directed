@@ -86,6 +86,14 @@ namespace LinkGraph {
         }
 
         /// <summary>
+        /// The number of frames elapsed. 
+        /// </summary>
+        public long Frames {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// The 3D renderer.
         /// </summary>
         private Renderer _renderer = new Renderer() {
@@ -117,6 +125,13 @@ namespace LinkGraph {
         /// The camera's velocity along the z-axis. 
         /// </summary>
         private double _cameraZVelocity = 0;
+
+        /// <summary>
+        /// Constructs a model. 
+        /// </summary>
+        public WorldModel() {
+            Frames = 0;
+        }
 
         /// <summary>
         /// Adds a node to the model. 
@@ -159,34 +174,36 @@ namespace LinkGraph {
             lock (_nodeLock) {
 
                 // Temporary test code. 
-                while (_nodes.Count < 100) {
-                    Add(new Node(Color.FromArgb(120, Color.White)));
-                }
-                while (_nodes.Count == 100) {
-                    Add(new Node(Color.FromArgb(120, Color.White)));
+                while (_nodes.Count < 400) {
+                    while (_nodes.Count < 100) {
+                        Add(new Node(Color.FromArgb(120, Color.White)));
+                    }
+                    while (_nodes.Count == 100) {
+                        Add(new Node(Color.FromArgb(120, Color.White)));
 
-                    for (int i = 0; i < 100; i++) {
+                        for (int i = 0; i < 100; i++) {
+                            Node a, b;
+                            while ((a = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) == (b = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) || a.IsConnectedTo(b)) ;
+                            Connect(a, b);
+                        }
+                    }
+                    if (PseudoRandom.Double() < .6) {
+                        Node n = new Node(Color.FromArgb(120, Color.White));
+                        Connect(_nodes[PseudoRandom.Int32(10)], n);
+                        Add(n);
+                    } else if (PseudoRandom.Double() < .7) {
+                        Node n = new Node(Color.FromArgb(120, Color.White));
+                        Connect(_nodes[PseudoRandom.Int32(_nodes.Count - 1)], n);
+                        Add(n);
+                    } else {
                         Node a, b;
                         while ((a = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) == (b = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) || a.IsConnectedTo(b)) ;
                         Connect(a, b);
                     }
+                    foreach (Node node in _nodes)
+                        if (node.Label == null)
+                            node.Label = node.Location.Z.ToString();
                 }
-                if (PseudoRandom.Double() < .6) {
-                    Node n = new Node(Color.FromArgb(120, Color.White));
-                    Connect(_nodes[PseudoRandom.Int32(10)], n);
-                    Add(n);
-                } else if (PseudoRandom.Double() < .7) {
-                    Node n = new Node(Color.FromArgb(120, Color.White));
-                    Connect(_nodes[PseudoRandom.Int32(_nodes.Count - 1)], n);
-                    Add(n);
-                } else {
-                    Node a, b;
-                    while ((a = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) == (b = _nodes[PseudoRandom.Int32(_nodes.Count - 1)]) || a.IsConnectedTo(b)) ;
-                    Connect(a, b);
-                }
-                foreach (Node node in _nodes)
-                    if (node.Label == null)
-                        node.Label = node.Location.Z.ToString();
 
                 // Update nodes and determine required tree width. 
                 double treeHalfWidth = 0;
@@ -229,13 +246,17 @@ namespace LinkGraph {
                         node.Acceleration += direction * EdgeFactor * (distance - idealLength) / node.Mass;
                     }
                 });
+
+                // Update frame info.
+                if (_nodes.Count > 0)
+                    Frames++;
             }
 
             // Update camera.
             _cameraZ += _cameraZVelocity * _cameraZ;
             _cameraZ = Math.Max(1, _cameraZ);
             _cameraZVelocity *= CameraZEasing;
-            _renderer.Camera = new Vector(0, 0, _cameraZ);
+            _renderer.Camera.Z = _cameraZ;
         }
 
         /// <summary>
@@ -274,14 +295,18 @@ namespace LinkGraph {
         public void Draw(Graphics g, bool showLabels = true) {
 
             // Draw edges. 
-            for (int i = 0; i < _edges.Count; i++) {
+            int edgeCount = _edges.Count;
+            for (int i = 0; i < edgeCount; i++) {
                 Edge edge = _edges[i];
-                g.DrawLine(EdgePen, _renderer.ComputePoint(edge.Node1.Location), _renderer.ComputePoint(edge.Node2.Location));
+                if (edge != null)
+                    g.DrawLine(EdgePen, _renderer.ComputePoint(edge.Node1.Location), _renderer.ComputePoint(edge.Node2.Location));
             }
 
             // Draw nodes.
-            for (int i = 0; i < _nodes.Count; i++)
-                _nodes[i].Draw(_renderer, g, showLabels);
+            int nodeCount = _nodes.Count;
+            for (int i = 0; i < nodeCount; i++)
+                if (_nodes[i] != null)
+                    _nodes[i].Draw(_renderer, g, showLabels);
         }
     }
 }

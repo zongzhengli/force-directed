@@ -20,17 +20,22 @@ namespace LinkGraph {
         /// <summary>
         /// The font for drawing the info text.
         /// </summary>
-        private static readonly Font InfoFont = new Font("Consolas", 9);
+        private static readonly Font InfoFont = new Font("Lucida Console", 8);
 
         /// <summary>
         /// The distance from the right border to align the info text. 
         /// </summary>
-        private static readonly int InfoWidth = 120;
+        private static readonly int InfoWidth = 160;
 
         /// <summary>
         /// The distance from the top border and between info text lines. 
         /// </summary>
-        private static readonly int InfoHeight = 12;
+        private static readonly int InfoHeight = 14;
+
+        /// <summary>
+        /// The distance from the top border of the topmost info text line. 
+        /// </summary>
+        private static readonly int InfoHeightInitial = -3;
 
         /// <summary>
         /// The multiplicative factor that gives the rate the update FPS converges. 
@@ -120,12 +125,15 @@ namespace LinkGraph {
             g.ResetTransform();
 
             // Draw info text. 
-            int w = Width - InfoWidth;
-            int h = 0;
-            g.DrawString(String.Format("{0,-8}{1:#0.0}", "Model", _updateFps), InfoFont, InfoBrush, w, h += InfoHeight);
-            g.DrawString(String.Format("{0,-8}{1:#0.0}", "Draw", _drawFps), InfoFont, InfoBrush, w, h += InfoHeight);
-            g.DrawString(String.Format("{0,-8}{1}", "Nodes", _model.NodeCount), InfoFont, InfoBrush, w, h += InfoHeight);
-            g.DrawString(String.Format("{0,-8}{1}", "Edges", _model.EdgeCount), InfoFont, InfoBrush, w, h += InfoHeight);
+            int x = Width - InfoWidth;
+            int y = InfoHeightInitial;
+            g.DrawString(String.Format("{0,-9}{1:#0.0}", "Model", _updateFps), InfoFont, InfoBrush, x, y += InfoHeight);
+            g.DrawString(String.Format("{0,-9}{1:#0.0}", "Render", _drawFps), InfoFont, InfoBrush, x, y += InfoHeight);
+            g.DrawString(String.Format("{0,-9}{1}", "Nodes", _model.NodeCount), InfoFont, InfoBrush, x, y += InfoHeight);
+            g.DrawString(String.Format("{0,-9}{1}", "Edges", _model.EdgeCount), InfoFont, InfoBrush, x, y += InfoHeight);
+            g.DrawString(String.Format("{0,-9}{1}", "Frames", _model.Frames), InfoFont, InfoBrush, x, y += InfoHeight);
+
+            g.DrawString("ZONG ZHENG LI", InfoFont, InfoBrush, x, Height - 60);
 
             // Fps stuff. 
             _drawTimer.Stop();

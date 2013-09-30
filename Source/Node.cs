@@ -32,25 +32,27 @@ namespace LinkGraph {
 
         /// <summary>
         /// The collection of brushes for drawing labels. LabelBrush[x] gives the 
-        /// appropriate brush for drawing at 8-bit alpha level x. 
+        /// appropriate brush for drawing at alpha level x where x is an 8-bit 
+        /// integer. 
         /// </summary>
         private static readonly Brush[] LabelBrush = new Brush[256];
 
         /// <summary>
         /// The collection of fonts for drawing labels. LabelFont[s] gives the 
-        /// appropriate font of size s. 
+        /// appropriate font of size s where s is a string of a floating point value 
+        /// rounded with exactly one decimal. 
         /// </summary>
-        private static readonly Font[] LabelFont = new Font[LabelFontMax + 1];
-
-        /// <summary>
-        /// The maximum font size for drawing labels. 
-        /// </summary>
-        private const int LabelFontMax = 60;
+        private static readonly Dictionary<string, Font> LabelFont = new Dictionary<string, Font>();
 
         /// <summary>
         /// The distance within which labels start being drawn.  
         /// </summary>
         private const double LabelRange = 1000;
+
+        /// <summary>
+        /// The multiplicative factor for label opacity. 
+        /// </summary>
+        private const double LabelOpacity = 0.5;
 
         /// <summary>
         /// The intercept in the label opacity equation. 
@@ -142,20 +144,6 @@ namespace LinkGraph {
         private Brush _brush;
 
         /// <summary>
-        /// Initializes static members. 
-        /// </summary>
-        static Node() {
-
-            // Initialize label brushes. 
-            for (int i = 0; i < LabelBrush.Length; i++)
-                LabelBrush[i] = new SolidBrush(Color.FromArgb(i, Color.White));
-
-            // Initialize label fonts
-            for (int i = 1; i < LabelFont.Length; i++)
-                LabelFont[i] = new Font("Consolas", i);
-        }
-
-        /// <summary>
         /// Constructs a node with the given colour. 
         /// </summary>
         /// <param name="colour">The colour of the node.</param>
@@ -214,26 +202,39 @@ namespace LinkGraph {
         public void Draw(Renderer renderer, Graphics g, bool showLabels = true) {
             double radius = Radius;
 
-            // Draw circle. If it is successful the node is in view and we try to draw 
-            // the label as well. 
+            // Draw the node. 
             if (renderer.FillCircle2D(g, _brush, Location, radius)) {
 
-                // Draw label. 
+                // The node is drawn successfully, so it visible. We try to draw the label 
+                // as well. 
                 if (showLabels && Label != null) {
+
+                    // Determine size and opacity.
                     double ratio = renderer.ComputeScale(Location);
                     int radiusOffset = (int)Math.Round(radius * ratio);
 
-                    Point point = renderer.ComputePoint(Location);
-                    point.Offset(radiusOffset + LabelOffset, 0);
-
                     double opacity = LabelOpacityIntercept - Location.To(renderer.Camera).Magnitude() / 1000.0;
                     opacity = Math.Min(Math.Max(opacity, 0), 1);
+                    opacity *= LabelOpacity;
+                    int alpha = (int)Math.Round(255 * opacity);
 
-                    if (opacity > 1 / 255.0 && ratio >= 1) {
-                        Brush brush = LabelBrush[(int)(255 * opacity)];
-                        Font font = LabelFont[(int)Math.Min(Math.Round(ratio), LabelFontMax)];
+                    // Determine if label is visible. 
+                    if (alpha > 1 && ratio > 0) {
 
-                        g.DrawString(Label, font, brush, point, LabelFormat);
+                        // Initialize label brush if it has not been for the current alpha level. 
+                        if (LabelBrush[alpha] == null)
+                            LabelBrush[alpha] = new SolidBrush(Color.FromArgb(alpha, Color.White));
+
+                        // Initialize label font if it has not been for the current size. 
+                        string size = ratio.ToString("#0.0");
+                        if (!LabelFont.ContainsKey(size))
+                            LabelFont.Add(size, new Font("Lucida Console", Single.Parse(size)));
+
+                        // Determine screen location. 
+                        Point point = renderer.ComputePoint(Location);
+                        point.Offset(radiusOffset + LabelOffset, 0);
+
+                        g.DrawString(Label, LabelFont[size], LabelBrush[alpha], point, LabelFormat);
                     }
                 }
             }
