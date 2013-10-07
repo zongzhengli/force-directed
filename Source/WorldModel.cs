@@ -4,7 +4,7 @@ using System.Drawing;
 using Lattice;
 using Threading;
 
-namespace LinkGraph {
+namespace ForceDirected {
 
     /// <summary>
     /// Represents a model of nodes and edges. 

@@ -7,8 +7,8 @@
     <ProjectGuid>{576BD5FA-D88A-420E-95CE-1DCDDF069A88}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LinkGraph</RootNamespace>
-    <AssemblyName>Link Graph</AssemblyName>
+    <RootNamespace>ForceDirected</RootNamespace>
+    <AssemblyName>Force Directed</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>

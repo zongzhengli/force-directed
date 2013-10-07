@@ -4,7 +4,7 @@ using System.Text;
 using Lattice;
 using System.Drawing;
 
-namespace LinkGraph {
+namespace ForceDirected {
 
     /// <summary>
     /// Represents a node in the graph. 

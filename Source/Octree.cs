@@ -2,7 +2,7 @@
 using System.Drawing;
 using Lattice;
 
-namespace LinkGraph {
+namespace ForceDirected {
 
     /// <summary>
     /// Represents the tree structure in the Barnes-Hut algorithm. 

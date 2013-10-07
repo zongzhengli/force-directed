@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LinkGraph {
+namespace ForceDirected {
 
     /// <summary>
     /// Represents an edge that connects two nodes. 

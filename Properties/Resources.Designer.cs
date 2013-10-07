@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LinkGraph.Properties {
+namespace ForceDirected.Properties {
     using System;
     
     

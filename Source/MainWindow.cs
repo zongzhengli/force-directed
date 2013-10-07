@@ -8,7 +8,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Lattice;
 
-namespace LinkGraph {
+namespace ForceDirected {
 
     public partial class MainWindow : Form {
 

@@ -1,4 +1,4 @@
-﻿namespace LinkGraph {
+﻿namespace ForceDirected {
     partial class MainWindow {
         /// <summary>
         /// Required designer variable.
