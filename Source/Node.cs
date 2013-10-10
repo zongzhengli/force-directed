@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Lattice;
 using System.Drawing;
+using Lattice;
 
 namespace ForceDirected {
 
