@@ -7,9 +7,9 @@ using Threading;
 namespace ForceDirected {
 
     /// <summary>
-    /// Represents a model of nodes and edges. 
+    /// Represents a world model of nodes and edges. 
     /// </summary>
-    class WorldModel {
+    class World {
 
         /// <summary>
         /// The multiplicative factor for origin attraction of nodes. 
@@ -68,7 +68,7 @@ namespace ForceDirected {
         private const double CameraZEasing = 0.94;
 
         /// <summary>
-        /// The number of nodes in the model. 
+        /// The number of nodes in the world model. 
         /// </summary>
         public int NodeCount {
             get {
@@ -77,7 +77,7 @@ namespace ForceDirected {
         }
 
         /// <summary>
-        /// The number of edges in the model. 
+        /// The number of edges in the world model. 
         /// </summary>
         public int EdgeCount {
             get {
@@ -102,12 +102,12 @@ namespace ForceDirected {
         };
 
         /// <summary>
-        /// The collection of nodes in the model. 
+        /// The collection of nodes in the world model. 
         /// </summary>
         private List<Node> _nodes = new List<Node>();
 
         /// <summary>
-        /// The collection of edges in the model. 
+        /// The collection of edges in the world model. 
         /// </summary>
         private List<Edge> _edges = new List<Edge>();
 
@@ -127,32 +127,32 @@ namespace ForceDirected {
         private double _cameraZVelocity = 0;
 
         /// <summary>
-        /// Constructs a model. 
+        /// Constructs a world model. 
         /// </summary>
-        public WorldModel() {
+        public World() {
             Frames = 0;
         }
 
         /// <summary>
-        /// Adds a node to the model. 
+        /// Adds a node to the world model. 
         /// </summary>
-        /// <param name="node">The node to add to the model.</param>
+        /// <param name="node">The node to add to the world model.</param>
         public void Add(Node node) {
             lock (_nodeLock)
                 _nodes.Add(node);
         }
 
         /// <summary>
-        /// Adds a collection of nodes to the model.
+        /// Adds a collection of nodes to the world model.
         /// </summary>
-        /// <param name="nodes">The collection of nodes to add to the model.</param>
+        /// <param name="nodes">The collection of nodes to add to the world model.</param>
         public void AddRange(IEnumerable<Node> nodes) {
             lock (_nodeLock)
                 _nodes.AddRange(nodes);
         }
 
         /// <summary>
-        /// Connects two nodes in the model. 
+        /// Connects two nodes in the world model. 
         /// </summary>
         /// <param name="a">A node to connect.</param>
         /// <param name="b">A node to connect.</param>
@@ -167,7 +167,7 @@ namespace ForceDirected {
         }
 
         /// <summary>
-        /// Updates the model. 
+        /// Updates the world model. 
         /// </summary>
         public void Update() {
 
@@ -192,10 +192,10 @@ namespace ForceDirected {
 
                 Parallel.ForEach(_nodes, node => {
 
-                    // Repulsion between nodes. 
+                    // Apply repulsion between nodes. 
                     tree.Accelerate(node);
 
-                    // Origin attraction of nodes. 
+                    // Apply origin attraction of nodes. 
                     Vector originDisplacementUnit = -node.Location.Unit();
                     double originDistance = node.Location.Magnitude();
 
@@ -205,7 +205,7 @@ namespace ForceDirected {
 
                     node.Acceleration += originDisplacementUnit * attractionCofficient / (originDistance + OriginEpsilon);
 
-                    // Edge spring behaviour. 
+                    // Apply edge spring forces. 
                     foreach (Node other in node.Connected) {
                         Vector displacement = node.Location.To(other.Location);
                         Vector direction = displacement.Unit();
@@ -229,7 +229,7 @@ namespace ForceDirected {
         }
 
         /// <summary>
-        /// Rotates the model along an arbitrary axis. 
+        /// Rotates the world model along an arbitrary axis. 
         /// </summary>
         /// <param name="point">The starting point for the axis of rotation.</param>
         /// <param name="direction">The direction for the axis of rotation.</param>
@@ -257,7 +257,7 @@ namespace ForceDirected {
         }
 
         /// <summary>
-        /// Draws the model. 
+        /// Draws the world model. 
         /// </summary>
         /// <param name="g">The graphics surface.</param>
         /// <param name="showLabels">Whether to draw node labels.</param>

@@ -67,7 +67,7 @@ namespace ForceDirected {
         /// <summary>
         /// The model of nodes and edges. 
         /// </summary>
-        private WorldModel _model = new WorldModel();
+        private World _model = new World();
 
         /// <summary>
         /// The timer used to measure the drawing FPS. 

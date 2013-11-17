@@ -154,8 +154,8 @@ namespace ForceDirected {
                 // Calculate a normalized acceleration value and multiply it with the 
                 // displacement in each coordinate to get that coordinate's acceleration 
                 // component. 
-                double distance = Math.Sqrt(dSquared + WorldModel.RepulsionEpsilon * WorldModel.RepulsionEpsilon);
-                double normAcc = WorldModel.RepulsionFactor * _totalMass / (distance * distance * distance);
+                double distance = Math.Sqrt(dSquared + World.RepulsionEpsilon * World.RepulsionEpsilon);
+                double normAcc = World.RepulsionFactor * _totalMass / (distance * distance * distance);
 
                 node.Acceleration.X += normAcc * dx;
                 node.Acceleration.Y += normAcc * dy;
