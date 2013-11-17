@@ -7,7 +7,7 @@ using Lattice;
 
 namespace ForceDirected {
 
-    public partial class MainWindow : Form {
+    public partial class Window : Form {
 
         /// <summary>
         /// The brush for drawing the info text. 
@@ -97,14 +97,14 @@ namespace ForceDirected {
         /// <summary>
         /// Constructs and initializes the main window. 
         /// </summary>
-        public MainWindow() {
+        public Window() {
             InitializeComponent();
+            InitializeMouseEvents();
+
             DoubleBuffered = true;
             _model.GenerateDemo();
-
             Paint += Draw;
 
-            InitializeMouseEvents();
             StartDraw();
             StartUpdate();
         }

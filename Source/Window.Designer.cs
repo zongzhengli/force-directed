@@ -1,5 +1,5 @@
 ﻿namespace ForceDirected {
-    partial class MainWindow {
+    partial class Window {
         /// <summary>
         /// Required designer variable.
         /// </summary>
