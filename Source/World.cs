@@ -167,26 +167,24 @@ namespace ForceDirected {
         }
 
         /// <summary>
-        /// Updates the world model. 
+        /// Advances the world model by one frame. 
         /// </summary>
         public void Update() {
 
             // Update nodes.
             lock (_nodeLock) {
 
-                // Update nodes and determine required tree width. 
-                double treeHalfWidth = 0;
+                // Update the nodes and determine required tree width. 
+                double halfWidth = 0;
                 foreach (Node node in _nodes) {
                     node.Update();
-                    treeHalfWidth = Math.Max(Math.Abs(node.Location.X), treeHalfWidth);
-                    treeHalfWidth = Math.Max(Math.Abs(node.Location.Y), treeHalfWidth);
-                    treeHalfWidth = Math.Max(Math.Abs(node.Location.Z), treeHalfWidth);
+                    halfWidth = Math.Max(Math.Abs(node.Location.X), halfWidth);
+                    halfWidth = Math.Max(Math.Abs(node.Location.Y), halfWidth);
+                    halfWidth = Math.Max(Math.Abs(node.Location.Z), halfWidth);
                 }
 
                 // Build tree for node repulsion. 
-                double repulsion = RepulsionFactor * (6000.0 / (1000.0 + 5.0 * _nodes.Count));
-
-                Octree tree = new Octree(2.1 * treeHalfWidth);
+                Octree tree = new Octree(2.1 * halfWidth);
                 foreach (Node node in _nodes)
                     tree.Add(node);
 
