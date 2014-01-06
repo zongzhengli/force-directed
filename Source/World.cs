@@ -47,11 +47,6 @@ namespace ForceDirected {
         public const double EdgeLength = 30;
 
         /// <summary>
-        /// The pen used to draw edges. 
-        /// </summary>
-        private static readonly Pen EdgePen = new Pen(Color.FromArgb(40, Color.White));
-
-        /// <summary>
         /// The default value for the camera's position along the z-axis. 
         /// </summary>
         private const double CameraZDefault = 2000;
@@ -266,7 +261,7 @@ namespace ForceDirected {
             for (int i = 0; i < edgeCount; i++) {
                 Edge edge = _edges[i];
                 if (edge != null)
-                    g.DrawLine(EdgePen, _renderer.ComputePoint(edge.Node1.Location), _renderer.ComputePoint(edge.Node2.Location));
+                    edge.Draw(_renderer, g);
             }
 
             // Draw nodes.

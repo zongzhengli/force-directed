@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Lattice;
+using System;
+using System.Drawing;
 
 namespace ForceDirected {
 
@@ -6,6 +8,11 @@ namespace ForceDirected {
     /// Represents an edge that connects two nodes. 
     /// </summary>
     class Edge {
+
+        /// <summary>
+        /// The pen used to draw edges. 
+        /// </summary>
+        private static readonly Pen EdgePen = new Pen(Color.FromArgb(60, Color.White));
 
         /// <summary>
         /// The first node connected by the edge. 
@@ -25,6 +32,15 @@ namespace ForceDirected {
         public Edge(Node node1, Node node2) {
             Node1 = node1;
             Node2 = node2;
+        }
+
+        /// <summary>
+        /// Draws the edge. 
+        /// </summary>
+        /// <param name="renderer">The 3D renderer.</param>
+        /// <param name="g">The graphics surface.</param>
+        public void Draw(Renderer renderer, Graphics g) {
+            g.DrawLine(EdgePen, renderer.ComputePoint(Node1.Location), renderer.ComputePoint(Node2.Location));
         }
     }
 }
