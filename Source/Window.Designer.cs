@@ -25,14 +25,14 @@
         private void InitializeComponent() {
             this.SuspendLayout();
             // 
-            // MainWindow
+            // Window
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
             this.ClientSize = new System.Drawing.Size(984, 561);
-            this.Name = "MainWindow";
-            this.Text = "Link Graph";
+            this.Name = "Window";
+            this.Text = "Force-Directed";
             this.ResumeLayout(false);
 
         }

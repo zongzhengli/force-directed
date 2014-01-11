@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using Lattice;
 using Threading;
+using System.Threading;
 
 namespace ForceDirected {
 
@@ -47,11 +48,6 @@ namespace ForceDirected {
         public const double EdgeLength = 30;
 
         /// <summary>
-        /// The default value for the camera's position along the z-axis. 
-        /// </summary>
-        private const double CameraZDefault = 2000;
-
-        /// <summary>
         /// The multiplicative factor for camera acceleration. 
         /// </summary>
         private const double CameraZAcceleration = -2e-4;
@@ -61,6 +57,11 @@ namespace ForceDirected {
         /// dampened. 
         /// </summary>
         private const double CameraZEasing = 0.94;
+
+        /// <summary>
+        /// The target number of milliseconds between node generations.
+        /// </summary>
+        private const int GenerationInterval = 100;
 
         /// <summary>
         /// The number of nodes in the world model. 
@@ -92,7 +93,7 @@ namespace ForceDirected {
         /// The 3D renderer.
         /// </summary>
         private Renderer _renderer = new Renderer() {
-            Camera = new Vector(0, 0, CameraZDefault),
+            Camera = new Vector(0, 0, 2000),
             FOV = 1400
         };
 
@@ -114,7 +115,7 @@ namespace ForceDirected {
         /// <summary>
         /// The camera's position on the z-axis. 
         /// </summary>
-        private double _cameraZ = CameraZDefault;
+        private double _cameraZ = 5000;
 
         /// <summary>
         /// The camera's velocity along the z-axis. 
@@ -272,15 +273,15 @@ namespace ForceDirected {
         }
 
         /// <summary>
-        /// Generates nodes and edges for demonstration. 
+        /// Generates nodes and edges endlessly for demonstration. 
         /// </summary>
-        public void GenerateDemo() {
+        public void StartGeneration() {
             lock (_nodeLock) {
                 Color colour = Color.FromArgb(120, Color.White);
 
                 // Add basis nodes. 
                 for (int i = 0; i < 100; i++)
-                    Add(new Node(colour));
+                    Add(new Node(PseudoRandom.UInt64().ToString(), colour));
 
                 // Connect some basis nodes. 
                 for (int i = 0; i < 80; i++) {
@@ -294,14 +295,14 @@ namespace ForceDirected {
 
                 // Add group nodes. 
                 for (int i = 0; i < 200; i++) {
-                    Node node = new Node(colour);
+                    Node node = new Node(PseudoRandom.UInt64().ToString(), colour);
                     Connect(node, _nodes[PseudoRandom.Int32(10)]);
                     Add(node);
                 }
 
                 // Add outlier nodes. 
                 for (int i = 0; i < 200; i++) {
-                    Node node = new Node(colour);
+                    Node node = new Node(PseudoRandom.UInt64().ToString(), colour);
                     Connect(node, _nodes[PseudoRandom.Int32(_nodes.Count - 1)]);
                     Add(node);
                 }
@@ -316,10 +317,17 @@ namespace ForceDirected {
                     Connect(a, b);
                 }
 
-                // Give each node a random label. 
-                foreach (Node node in _nodes)
-                    if (node.Label == null)
-                        node.Label = node.Location.Z.ToString();
+                // Add endless outlier nodes. 
+                new Thread(new ThreadStart(() => {
+                    while (true) {
+                        Node node = new Node(PseudoRandom.UInt64().ToString(), colour);
+                        Connect(node, _nodes[PseudoRandom.Int32(_nodes.Count - 1)]);
+                        Add(node);
+                        Thread.Sleep(GenerationInterval);
+                    }
+                })) {
+                    IsBackground = true
+                }.Start();
             }
         }
     }

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using Lattice;
+using System.Drawing.Drawing2D;
 
 namespace ForceDirected {
 
@@ -102,11 +103,11 @@ namespace ForceDirected {
             InitializeMouseEvents();
 
             DoubleBuffered = true;
-            _model.GenerateDemo();
             Paint += Draw;
 
             StartDraw();
             StartUpdate();
+            _model.StartGeneration();
         }
 
         /// <summary>
@@ -116,6 +117,7 @@ namespace ForceDirected {
         /// <param name="e">The paint event data.</param>
         private void Draw(object sender, PaintEventArgs e) {
             Graphics g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
 
             // Draw model. 
             g.TranslateTransform(Width / 2, Height / 2);
@@ -201,9 +203,7 @@ namespace ForceDirected {
 
                     // Update the model. 
                     timer.Start();
-
-                    if (!_drag)
-                        _model.Update();
+                    _model.Update();
 
                     // Sleep for appropriate duration. 
                     int elapsed = (int)timer.ElapsedMilliseconds;

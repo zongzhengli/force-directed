@@ -12,7 +12,7 @@ namespace ForceDirected {
         /// <summary>
         /// The pen used to draw edges. 
         /// </summary>
-        private static readonly Pen EdgePen = new Pen(Color.FromArgb(60, Color.White));
+        private static readonly Pen EdgePen = new Pen(Color.FromArgb(40, Color.White));
 
         /// <summary>
         /// The first node connected by the edge. 
