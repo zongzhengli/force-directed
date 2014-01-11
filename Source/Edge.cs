@@ -40,7 +40,8 @@ namespace ForceDirected {
         /// <param name="renderer">The 3D renderer.</param>
         /// <param name="g">The graphics surface.</param>
         public void Draw(Renderer renderer, Graphics g) {
-            g.DrawLine(EdgePen, renderer.ComputePoint(Node1.Location), renderer.ComputePoint(Node2.Location));
+            if (Node1.Location.Z < renderer.Camera.Z || Node2.Location.Z < renderer.Camera.Z)
+                g.DrawLine(EdgePen, renderer.ComputePoint(Node1.Location), renderer.ComputePoint(Node2.Location));
         }
     }
 }
