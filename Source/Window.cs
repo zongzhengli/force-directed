@@ -127,13 +127,13 @@ namespace ForceDirected {
             // Draw info text. 
             int x = Width - InfoWidth;
             int y = InfoHeightInitial;
-            g.DrawString(String.Format("{0,-9}{1:#0.0}", "Model", _updateFps), InfoFont, InfoBrush, x, y += InfoHeight);
-            g.DrawString(String.Format("{0,-9}{1:#0.0}", "Render", _drawFps), InfoFont, InfoBrush, x, y += InfoHeight);
-            g.DrawString(String.Format("{0,-9}{1}", "Nodes", _model.NodeCount), InfoFont, InfoBrush, x, y += InfoHeight);
-            g.DrawString(String.Format("{0,-9}{1}", "Edges", _model.EdgeCount), InfoFont, InfoBrush, x, y += InfoHeight);
-            g.DrawString(String.Format("{0,-9}{1}", "Frames", _model.Frames), InfoFont, InfoBrush, x, y += InfoHeight);
+            g.DrawString(String.Format("{0,-9}{1:#0.0}", "Model" , _updateFps)      , InfoFont, InfoBrush, x, y += InfoHeight);
+            g.DrawString(String.Format("{0,-9}{1:#0.0}", "Render", _drawFps)        , InfoFont, InfoBrush, x, y += InfoHeight);
+            g.DrawString(String.Format("{0,-9}{1}"     , "Nodes" , _model.NodeCount), InfoFont, InfoBrush, x, y += InfoHeight);
+            g.DrawString(String.Format("{0,-9}{1}"     , "Edges" , _model.EdgeCount), InfoFont, InfoBrush, x, y += InfoHeight);
+            g.DrawString(String.Format("{0,-9}{1}"     , "Frames", _model.Frames)   , InfoFont, InfoBrush, x, y += InfoHeight);
 
-            g.DrawString("ZONG ZHENG LI", InfoFont, InfoBrush, x, Height - 60);
+            g.DrawString("ZONG ZHENG LI"                                            , InfoFont, InfoBrush, x, Height - 60);
 
             // Fps stuff. 
             _drawTimer.Stop();
