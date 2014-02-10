@@ -1,6 +1,6 @@
-﻿using Lattice;
-using System;
+﻿using System;
 using System.Drawing;
+using Lattice;
 
 namespace ForceDirected {
 

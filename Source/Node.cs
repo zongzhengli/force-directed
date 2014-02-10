@@ -38,10 +38,10 @@ namespace ForceDirected {
 
         /// <summary>
         /// The collection of fonts for drawing labels. LabelFont[s] gives the 
-        /// appropriate font of size s where s is a string of a floating point value 
-        /// rounded with exactly one decimal. 
+        /// appropriate font of size s where s is a floating point value rounded with 
+        /// exactly one decimal. 
         /// </summary>
-        private static readonly Dictionary<string, Font> LabelFont = new Dictionary<string, Font>();
+        private static readonly Dictionary<double, Font> LabelFont = new Dictionary<double, Font>();
 
         /// <summary>
         /// The distance within which labels start being drawn.  
@@ -225,9 +225,9 @@ namespace ForceDirected {
                             LabelBrush[alpha] = new SolidBrush(Color.FromArgb(alpha, Color.White));
 
                         // Initialize label font if it has not been for the current size. 
-                        string size = ratio.ToString("#0.0");
+                        double size = Math.Round(ratio, 1);
                         if (!LabelFont.ContainsKey(size))
-                            LabelFont.Add(size, new Font("Lucida Console", Single.Parse(size)));
+                            LabelFont.Add(size, new Font("Lucida Console", (float)size));
 
                         // Determine screen location. 
                         Point point = renderer.ComputePoint(Location);

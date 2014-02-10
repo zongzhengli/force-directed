@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using Lattice;
 using Threading;
-using System.Threading;
 
 namespace ForceDirected {
 
