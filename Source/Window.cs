@@ -120,7 +120,7 @@ namespace ForceDirected {
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
             // Draw model. 
-            g.TranslateTransform(Width / 2, Height / 2);
+            g.TranslateTransform(ClientSize.Width / 2, ClientSize.Height / 2);
             _model.Draw(g);
             g.ResetTransform();
 
